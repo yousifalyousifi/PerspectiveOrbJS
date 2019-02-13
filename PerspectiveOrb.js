@@ -22,10 +22,15 @@ var starsObject;
 var primaryMatrials = [];
 var secondaryMatrials = [];
 
+var mouseDown = false;
+var shiftKeyDown = false;
+
 var options = new (function() {
 
 	this.showInfo = true;
 	this.sideView = false;
+	this.needMouseDown = false
+	this.needShiftKeyDown = false
 	this.dynamicColorPrimary = false;
 	this.dynamicColorSecondary = false;
 	this.colorPrimary = [255,255,255];
@@ -38,6 +43,8 @@ var options = new (function() {
 	this.dynamicColorSecondaryInterval = null;
 
 })();
+
+
 init();
 animate();
 
@@ -112,7 +119,10 @@ function init() {
 
 	window.addEventListener( 'resize', onWindowResize, false );
 	document.addEventListener( 'keydown', onKeyDown, false );
+	document.addEventListener( 'keyup', onKeyUp, false );
 	document.addEventListener( 'mousemove', onmousemove, false );
+	document.addEventListener( 'mousedown', onmousedown, false );
+	document.addEventListener( 'mouseup', onmouseup, false );
 	document.addEventListener( 'touchmove', ontouchmove, false );
 
 	mouseX = 0.25 * SCREEN_WIDTH;
@@ -125,14 +135,48 @@ function init() {
 }
 
 function onKeyDown( event ) {
+	if(event.key == "Shift") {
+		shiftKeyDown = true;
+	}
+}
+
+function onKeyUp( event ) {
+	if(event.key == "Shift") {
+		shiftKeyDown = false;
+	}
 }
 
 function onmousemove( event ) {
-	mouseX = event.clientX;
-	mouseY = event.clientY;
+	if(options.needMouseDown || options.needShiftKeyDown) {
+		let check = true;
+		if(options.needMouseDown && !mouseDown) {
+			check = false;
+		}
+		if(options.needShiftKeyDown && !shiftKeyDown) {
+			check = false;
+		}
+		if(check) {
+			console.log("mousemove mouseDown")
+			mouseX = event.clientX;
+			mouseY = event.clientY;
+		}
+	} else if(!options.needMouseDown) {
+		console.log("mousemove")
+		mouseX = event.clientX;
+		mouseY = event.clientY;
+	}
+}
+function onmousedown( event ) {
+		console.log("onmousedown ")
+	mouseDown = true
+}
+function onmouseup( event ) {
+		console.log("onmouseup ")
+	mouseDown = false
 }
 
 function ontouchmove( event ) {
+	console.log("touch")
 	mouseX = event.touches[0].clientX;
   	mouseY = event.touches[0].clientY;
 }
@@ -319,6 +363,9 @@ window.onload = function() {
   		document.getElementById("grid").style.visibility = value?"visible":"hidden"
 	});
 
+	gui.add(options, "needMouseDown")
+	gui.add(options, "needShiftKeyDown")
+
   	controller = gui.addColor(options, "colorPrimary");
   	let colorPrimaryController = controller;
 	controller.onChange(function(value) {
@@ -384,6 +431,5 @@ window.onload = function() {
   	let debug = gui.addFolder("Debug");
   	debug.add(options, 'sideView');
 
-  	var closeButton = document.getElementByClassName("close")
 };
    
