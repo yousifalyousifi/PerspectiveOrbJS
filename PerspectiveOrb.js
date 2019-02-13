@@ -311,7 +311,7 @@ function setPrimaryMaterialColorsDiagonal(color,startingColumn,slope) {
 
 window.onload = function() {
 	let controller;
-  	var gui = new dat.GUI({closeOnTop: true});
+  	var gui = new dat.GUI({closeOnTop: true, closed: true});
   	gui.width = 300;
 
   	controller = gui.add(options, "showInfo")
@@ -370,11 +370,20 @@ window.onload = function() {
 		}
 	});
 
-	gui.add(options, "showStars")
+	controller = gui.add(options, "showStars")
+	controller.onChange(function(value) {
+		if(value) {
+			scene.add(starsObject)
+		} else {
+			scene.remove(starsObject)
+		}
+	});
 	gui.add(options, "newStars")
 
 
   	let debug = gui.addFolder("Debug");
   	debug.add(options, 'sideView');
+
+  	var closeButton = document.getElementByClassName("close")
 };
    
