@@ -8,6 +8,8 @@ var camera, scene, renderer, composer;
 var meshSecondary, meshPrimary;
 var mouseX, mouseY;
 
+var bloomPass;
+
 var NUM_ROWS = 40;
 var NUM_COLS = 40;
 var NUM_SPHERES = NUM_COLS * NUM_ROWS;
@@ -37,6 +39,10 @@ var options = new (function() {
 	this.colorSecondary = [255,0,0]
 	this.showStars = true;
 	this.newStars = createStarsObject;
+
+	this.expoStrength = 3
+	this.expoRadius = 0.5;
+	this.expoThreshold = 0;
 
 	//helper variables
 	this.dynamicColorPrimaryInterval = null;
@@ -103,11 +109,12 @@ function init() {
 	container.appendChild( renderer.domElement );
 
 	var renderScene = new THREE.RenderPass( scene, camera );
-	var bloomPass = new THREE.UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+	bloomPass = new THREE.UnrealBloomPass( 
+		new THREE.Vector2( window.innerWidth, window.innerHeight ), 
+		params.bloomStrength, 
+		params.bloomRadius, 
+		params.bloomThreshold );
 	bloomPass.renderToScreen = true;
-	bloomPass.threshold = params.bloomThreshold;
-	bloomPass.strength = params.bloomStrength;
-	bloomPass.radius = params.bloomRadius;
 
 	composer = new THREE.EffectComposer( renderer );
 	composer.setSize( window.innerWidth, window.innerHeight );
@@ -146,6 +153,8 @@ function onKeyUp( event ) {
 	}
 }
 
+var mousepoints = [];
+
 function onmousemove( event ) {
 	if(options.needMouseDown || options.needShiftKeyDown) {
 		let check = true;
@@ -159,16 +168,19 @@ function onmousemove( event ) {
 			console.log("mousemove mouseDown")
 			mouseX = event.clientX;
 			mouseY = event.clientY;
+			mousepoints.push(event)
 		}
 	} else if(!options.needMouseDown) {
 		console.log("mousemove")
 		mouseX = event.clientX;
 		mouseY = event.clientY;
+		mousepoints.push(event)
 	}
 }
 function onmousedown( event ) {
 		console.log("onmousedown ")
 	mouseDown = true
+	onmousemove(event)
 }
 function onmouseup( event ) {
 		console.log("onmouseup ")
@@ -265,7 +277,9 @@ function createStarsObject() {
 	}
 	starGeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 	starsObject = new THREE.Points( starGeometry, new THREE.PointsMaterial( { color: 0xbbbbbb, size: 1 } ) );
-	scene.add( starsObject );
+	if(options.showStars) {
+		scene.add( starsObject );
+	}
 }
 
 function fakecamera(eyeX, eyeY, eyeZ,
@@ -354,7 +368,7 @@ function setPrimaryMaterialColorsDiagonal(color,startingColumn,slope) {
 
 
 window.onload = function() {
-	let controller;
+	let controller, folder;
   	var gui = new dat.GUI({closeOnTop: true, closed: true});
   	gui.width = 300;
 
@@ -428,8 +442,68 @@ window.onload = function() {
 	gui.add(options, "newStars")
 
 
+  	folder = gui.addFolder("Exposure");
+	controller = folder.add(options, "expoRadius", 0.00, 1.2, 0.01)
+	controller.onChange(function(value) {
+		bloomPass.radius = value
+	});
+	controller = folder.add(options, "expoStrength", 0.00, 10, 0.01)
+	controller.onChange(function(value) {
+		bloomPass.strength = value
+	});
+	controller = folder.add(options, "expoThreshold", 0.00, 1.2, 0.01)
+	controller.onChange(function(value) {
+		bloomPass.threshold = value
+	});
+
+
   	let debug = gui.addFolder("Debug");
   	debug.add(options, 'sideView');
 
 };
    
+
+ class BouncingBox {
+
+ 	constructor() {
+ 		this.id = "boundingBox"
+ 		this.el = document.getElementById(this.id);
+ 		this.width = 100;
+ 		this.height = 100;
+ 		this.x = 200;
+ 		this.y = 100;
+ 		this.vx = 1;
+ 		this.vy = 1;
+ 	}
+
+ 	update() {
+ 		//do move/bounce logic
+ 		//update diplay
+ 	}
+
+ 	updateDisplay() {
+
+ 	}
+
+/*
+width: 200px;
+height: 200px;
+position: fixed;
+left: 100px;
+top: 200px;
+border: white solid 1px;
+
+width: 20px;
+height: 20px;
+position: fixed;
+left: 100px;
+top: 200px;
+border-radius: 50%;
+background-color: yellow;
+*/
+
+
+ }
+
+
+
