@@ -6,7 +6,7 @@
  		this.el = document.getElementById(this.id);
  		this.vX = 0.1;
  		this.vY = 0.1;
- 		this.set(200,200,100,100)
+ 		this.set(200,200,100,150)
  		this.el.style.border = "white solid 1px"
  		this.el.style.position = "fixed"
  		this._windowWidth = window.innerWidth
@@ -72,22 +72,6 @@
  		this._windowWidth = window.innerWidth
  		this._windowHeight = window.innerHeight
  	}
-/*
-width: 200px;
-height: 200px;
-position: fixed;
-left: 100px;
-top: 200px;
-border: white solid 1px;
-
-width: 20px;
-height: 20px;
-position: fixed;
-left: 100px;
-top: 200px;
-border-radius: 50%;
-background-color: yellow;
-*/
  }
 
  class BoundingBoxDial {
@@ -97,10 +81,12 @@ background-color: yellow;
  		this.el = document.getElementById(this.id);
  		this.el.style.borderRadius = "50%"
  		this.el.style.backgroundColor = "yellow"
- 		this.radius = 100
- 		this.boundingBox = box
+ 		this.el.style.position = "fixed"
+ 		this.radiusX = box.width/2
+ 		this.radiusY = box.height/2
+ 		this.box = box
  		this.angle = 0
- 		this.vangle = 0.01
+ 		this.vangle = 0.1
  		this.set(this.angle,this.radius,20,20)
  		this.currentTime = Date.now()
  	}
@@ -110,12 +96,17 @@ background-color: yellow;
  		let elapsed = now - this.currentTime
  		this.currentTime = now
  		this.angle = this.angle + this.vangle
+ 		this.radiusX = this.box.width/2
+ 		this.radiusY = this.box.height/2
 
- 		let cX = this.box.x + this.box.width / 2
- 		let cY = this.box.y + this.box.height / 2
+ 		let boxCentreX = this.box.x + this.box.width / 2
+ 		let boxCentreY = this.box.y + this.box.height / 2
 
-        this.setX(this.x)
-        this.setY(this.y)
+ 		let x = Math.cos(this.angle) * this.radiusX + boxCentreX - this.width/2
+ 		let y = Math.sin(this.angle) * this.radiusY + boxCentreY - this.height/2
+
+        this.setX(x)
+        this.setY(y)
  	}
 
  	set(x,y,w,h) {
@@ -139,6 +130,10 @@ background-color: yellow;
  	setHeight(h) {
  		this.height = h
  		this.el.style.height = h+"px"
+ 	}
+
+ 	getPositionArray() {
+ 		return []
  	}
 
  }

@@ -28,6 +28,7 @@ var mouseDown = false;
 var shiftKeyDown = false;
 
 var boundingBox
+var boundingBoxDial
 
 var options = new (function() {
 
@@ -138,6 +139,7 @@ function init() {
 	mouseY = 0.9 * SCREEN_HEIGHT;
 
 	boundingBox = new BoundingBox()
+	boundingBoxDial = new BoundingBoxDial(boundingBox)
 
 	// window.setInterval(() => {
 	// 	secondaryMaterial.color = new THREE.Color(Math.random(), Math.random(), 0);
@@ -210,6 +212,7 @@ function onWindowResize() {
 function animate() {
 	requestAnimationFrame( animate );
 	boundingBox.update()
+	boundingBoxDial.update()
 	render();
 	stats.update();
 }
