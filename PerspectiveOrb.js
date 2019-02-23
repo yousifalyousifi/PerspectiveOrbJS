@@ -53,7 +53,7 @@ var options = new (function() {
 	//bounding box
 	this.boxEnable = true
 	this.boxHidden = true
-	this.boxRPM = 60
+	this.boxRPM = 10
 	this.boxWidth = 150
 	this.boxHeight = 100
 	this.boxVelocityX = 0.1
@@ -151,6 +151,7 @@ function init() {
 
 	boundingBox = new BoundingBox()
 	boundingBoxDial = new BoundingBoxDial(boundingBox)
+	boundingBoxDial.rpm = options.boxRPM
 	boundingBox.setHidden(true)
 	boundingBoxDial.setHidden(true)
 

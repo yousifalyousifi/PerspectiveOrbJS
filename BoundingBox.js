@@ -89,7 +89,6 @@
  		this.radiusY = box.height/2
  		this.box = box
  		this.angle = 0
- 		this.vangle = 0.1
  		this.rpm = 60
  		this.set(this.angle,this.radius,20,20)
  		this.currentTime = Date.now()
