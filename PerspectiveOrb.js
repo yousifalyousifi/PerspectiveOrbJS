@@ -27,6 +27,8 @@ var secondaryMatrials = [];
 var mouseDown = false;
 var shiftKeyDown = false;
 
+var boundingBox
+
 var options = new (function() {
 
 	this.showInfo = true;
@@ -135,6 +137,8 @@ function init() {
 	mouseX = 0.25 * SCREEN_WIDTH;
 	mouseY = 0.9 * SCREEN_HEIGHT;
 
+	boundingBox = new BoundingBox()
+
 	// window.setInterval(() => {
 	// 	secondaryMaterial.color = new THREE.Color(Math.random(), Math.random(), 0);
 	// }, 500);
@@ -200,10 +204,12 @@ function onWindowResize() {
 	renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 	camera.aspect = aspect;
 	camera.updateProjectionMatrix();
+	boundingBox.handleWindowSizeChange()
 }
 
 function animate() {
 	requestAnimationFrame( animate );
+	boundingBox.update()
 	render();
 	stats.update();
 }
@@ -462,48 +468,5 @@ window.onload = function() {
 
 };
    
-
- class BouncingBox {
-
- 	constructor() {
- 		this.id = "boundingBox"
- 		this.el = document.getElementById(this.id);
- 		this.width = 100;
- 		this.height = 100;
- 		this.x = 200;
- 		this.y = 100;
- 		this.vx = 1;
- 		this.vy = 1;
- 	}
-
- 	update() {
- 		//do move/bounce logic
- 		//update diplay
- 	}
-
- 	updateDisplay() {
-
- 	}
-
-/*
-width: 200px;
-height: 200px;
-position: fixed;
-left: 100px;
-top: 200px;
-border: white solid 1px;
-
-width: 20px;
-height: 20px;
-position: fixed;
-left: 100px;
-top: 200px;
-border-radius: 50%;
-background-color: yellow;
-*/
-
-
- }
-
 
 
