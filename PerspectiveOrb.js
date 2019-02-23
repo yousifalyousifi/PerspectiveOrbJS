@@ -33,7 +33,6 @@ var boundingBoxDial
 var options = new (function() {
 
 	this.showInfo = true;
-	this.sideView = false;
 	this.needMouseDown = false
 	this.needShiftKeyDown = false
 	this.dynamicColorPrimary = false;
@@ -50,6 +49,18 @@ var options = new (function() {
 	//helper variables
 	this.dynamicColorPrimaryInterval = null;
 	this.dynamicColorSecondaryInterval = null;
+
+	//bounding box
+	this.boxEnable = true
+	this.boxHidden = true
+	this.boxRPM = 60
+	this.boxWidth = 150
+	this.boxHeight = 100
+	this.boxVelocityX = 0.1
+	this.boxVelocityY = 0.1
+
+	//debug
+	this.sideView = false;
 
 })();
 
@@ -140,6 +151,8 @@ function init() {
 
 	boundingBox = new BoundingBox()
 	boundingBoxDial = new BoundingBoxDial(boundingBox)
+	boundingBox.setHidden(true)
+	boundingBoxDial.setHidden(true)
 
 	// window.setInterval(() => {
 	// 	secondaryMaterial.color = new THREE.Color(Math.random(), Math.random(), 0);
@@ -222,9 +235,6 @@ function render() {
 	renderer.clear();
 	renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
 
-	let x = camera.position.x;
-	let y = camera.position.y;
-
 	// Side View
 	if(options.sideView) {
 		camera.position.set(1500,0,0);
@@ -234,7 +244,14 @@ function render() {
 		camera.lookAt( 0,0,0 );
 	}
 
-	createPerspectiveOrb(10000,10000,mouseX / SCREEN_WIDTH, mouseX / SCREEN_WIDTH, mouseY / SCREEN_HEIGHT);
+	let x = mouseX
+	let y = mouseY
+	if(options.boxEnable) {
+		x = boundingBoxDial.x
+		y = boundingBoxDial.y
+	}
+
+	createPerspectiveOrb(10000,10000,x / SCREEN_WIDTH, x / SCREEN_WIDTH, y / SCREEN_HEIGHT);
 
 	// renderer.render( scene, camera );
 	composer.render();
@@ -463,6 +480,34 @@ window.onload = function() {
 	controller = folder.add(options, "expoThreshold", 0.00, 1.2, 0.01)
 	controller.onChange(function(value) {
 		bloomPass.threshold = value
+	});
+
+  	folder = gui.addFolder("Bounding Box");
+	controller = folder.add(options, "boxEnable")
+	controller = folder.add(options, "boxHidden")
+	controller.onChange(function(value) {
+		boundingBox.setHidden(value)
+		boundingBoxDial.setHidden(value)
+	});
+	controller = folder.add(options, "boxWidth", 0, 300, 1)
+	controller.onChange(function(value) {
+		boundingBox.setWidth(value)
+	});
+	controller = folder.add(options, "boxHeight", 0, 300, 1)
+	controller.onChange(function(value) {
+		boundingBox.setHeight(value)
+	});
+	controller = folder.add(options, "boxVelocityX", 0, 5, 0.01)
+	controller.onChange(function(value) {
+		boundingBox.vX = value
+	});
+	controller = folder.add(options, "boxVelocityY", 0, 5, 0.01)
+	controller.onChange(function(value) {
+		boundingBox.vY = value
+	});
+	controller = folder.add(options, "boxRPM", 1, 240, 1)
+	controller.onChange(function(value) {
+		boundingBoxDial.rpm = value
 	});
 
 

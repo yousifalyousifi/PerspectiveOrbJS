@@ -72,6 +72,9 @@
  		this._windowWidth = window.innerWidth
  		this._windowHeight = window.innerHeight
  	}
+ 	setHidden(hidden) {
+ 		this.el.style.visibility = hidden ? "hidden" : "visible"
+ 	}
  }
 
  class BoundingBoxDial {
@@ -87,6 +90,7 @@
  		this.box = box
  		this.angle = 0
  		this.vangle = 0.1
+ 		this.rpm = 60
  		this.set(this.angle,this.radius,20,20)
  		this.currentTime = Date.now()
  	}
@@ -95,7 +99,8 @@
  		let now = Date.now()
  		let elapsed = now - this.currentTime
  		this.currentTime = now
- 		this.angle = this.angle + this.vangle
+ 		let deltaAngle = (this.rpm*Math.PI*2)/60/1000*elapsed
+ 		this.angle = this.angle + deltaAngle
  		this.radiusX = this.box.width/2
  		this.radiusY = this.box.height/2
 
@@ -131,9 +136,9 @@
  		this.height = h
  		this.el.style.height = h+"px"
  	}
-
- 	getPositionArray() {
- 		return []
+ 	setHidden(hidden) {
+ 		console.log(hidden)
+ 		this.el.style.visibility = hidden ? "hidden" : "visible"
  	}
 
  }
